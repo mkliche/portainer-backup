@@ -22,4 +22,4 @@ echo "Cluster ID: $CID"
 echo "Downloading backup..."
 curl -O -J --output-dir /backup -X POST -H "Authorization: Bearer $T" -d "{}" "$P_URL/api/backup" && \
 echo "Deleting old backups..." && \
-find /backup -mmin +$BACKUP_EXPIRY_DAYS -type f -delete
+find /backup -mtime +$BACKUP_EXPIRY_DAYS -type f -delete
