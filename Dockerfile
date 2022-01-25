@@ -1,4 +1,4 @@
-FROM alpine
+FROM alpine:latest
 
 ENV LANG="en_US.UTF-8" \
     LC_ALL="C.UTF-8" \
@@ -15,15 +15,19 @@ RUN apk --update add \
     rm -rf /tmp/src && \
     rm -rf /var/cache/apk/*
 
-ADD ./stack-update.sh /stack-update.sh
+ADD ./backup.sh /backup.sh
 
-RUN chmod u+x  /stack-update.sh
-
-EXPOSE 80
+RUN chmod u+x  /backup.sh
 
 ENV P_USER="root" \
     P_PASS="password" \
     P_URL="http://example.com:9000" \
-    P_PRUNE="false"
+    BACKUP_EXPIRY_DAYS="365"
 
-ENTRYPOINT /stack-update.sh
+# Configure cron
+COPY ./crontab /etc/cron/crontab
+
+# Init cron
+RUN crontab /etc/cron/crontab
+
+CMD ["crond", "-f"]
